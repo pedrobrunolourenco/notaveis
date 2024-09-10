@@ -19,8 +19,14 @@ class RetornoNotavelSchema(BaseModel):
     atividade: str
     descricao: str
 
+class ListagemNotaveisSchema(BaseModel):
+    """ Define como uma listagem de Notaveis será apresentada
+    """
+    notaveis:List[RetornoNotavelSchema]
 
-def apresenta_notavel(notavel: RetornoNotavelSchema):
+
+
+def apresenta_notavel(notavel: Notavel):
     """ Retorna uma representação de um notável 
     """
     return {
@@ -30,4 +36,20 @@ def apresenta_notavel(notavel: RetornoNotavelSchema):
         "atividade": notavel.atividade,
         "descricao": notavel.descricao
     }
+
+
+def apresenta_notaveis(notaveis: List[Notavel]):
+    """ Retorna uma representação de uma lista de notaveis
+    """
+    result = []
+    for notavel in notaveis:
+        result.append({
+            "id": notavel.id,
+            "nome": notavel.nome,
+            "apelido": notavel.apelido,
+            "atividade": notavel.atividade,
+            "descricao": notavel.descricao
+        })
+
+    return {"notaveis": result}
 

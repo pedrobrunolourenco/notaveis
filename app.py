@@ -3,7 +3,7 @@ from flask import redirect, render_template
 from urllib.parse import unquote
 
 from schemas.error import ErrorSchema
-from schemas.notavel import NotavelAddSchema, RetornoNotavelSchema, apresenta_notavel
+from schemas.notavel import ListagemNotaveisSchema, NotavelAddSchema, RetornoNotavelSchema, apresenta_notaveis, apresenta_notavel
 from sqlalchemy.exc import IntegrityError
 
 from model import Session
@@ -64,6 +64,25 @@ def add_notavel(form: NotavelAddSchema):
 
 
 
+@app.get('/getall', tags=[notavel_tag],
+          responses={"200": ListagemNotaveisSchema, "409": ErrorSchema, "400": ErrorSchema})
+def get_notaveis():
+    """Obtém uma lista de notaveis
+
+    Retorna uma lista de representação dos notaveis
+    """
+    try:
+        session = Session()    
+
+        notaveis = session.query(Notavel).all()
+
+        return apresenta_notaveis(notaveis), 200
+
+        
+    except Exception as e:
+        error_msg = "Não foi possível obter listagem de notaveis :/"
+        logger.warning(f"Erro ao listar notaveis {error_msg}, erro: {e}")
+        return {"message": error_msg}, 400
     
 
 

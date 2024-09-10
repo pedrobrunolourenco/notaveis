@@ -10,6 +10,16 @@ class NotavelAddSchema(BaseModel):
     atividade: str
     descricao: str
 
+class NotavelUpdSchema(BaseModel):
+    """ Define como um novo notavel
+    """
+    id: int
+    nome: str 
+    apelido: str
+    atividade: str
+    descricao: str
+
+
 class RetornoNotavelSchema(BaseModel):
     """ Retorno de um novo notavel
     """

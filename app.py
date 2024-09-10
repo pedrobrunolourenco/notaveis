@@ -3,7 +3,7 @@ from flask import redirect, render_template
 from urllib.parse import unquote
 
 from schemas.error import ErrorSchema
-from schemas.notavel import ListagemNotaveisSchema, NotavelAddSchema, RetornoNotavelSchema, apresenta_notaveis, apresenta_notavel
+from schemas.notavel import ListagemNotaveisSchema, NotavelAddSchema, NotavelUpdSchema, RetornoNotavelSchema, apresenta_notaveis, apresenta_notavel
 from sqlalchemy.exc import IntegrityError
 
 from model import Session
@@ -61,9 +61,6 @@ def add_notavel(form: NotavelAddSchema):
         logger.warning(f"Erro ao adicionar um notável '{notavel.nome}', {error_msg}, erro: {e}")
         return {"message": error_msg}, 400
 
-
-
-
 @app.get('/getall', tags=[notavel_tag],
           responses={"200": ListagemNotaveisSchema, "409": ErrorSchema, "400": ErrorSchema})
 def get_notaveis():
@@ -73,19 +70,30 @@ def get_notaveis():
     """
     try:
         session = Session()    
-
         notaveis = session.query(Notavel).all()
-
         return apresenta_notaveis(notaveis), 200
-
-        
     except Exception as e:
         error_msg = "Não foi possível obter listagem de notaveis :/"
         logger.warning(f"Erro ao listar notaveis {error_msg}, erro: {e}")
         return {"message": error_msg}, 400
     
 
-
+@app.put('/update', tags=[notavel_tag],
+          responses={"200": RetornoNotavelSchema, "409": ErrorSchema, "400": ErrorSchema })
+def update_notavel(form: NotavelUpdSchema):
+    """Altera o dados notavel à base de dados
+    """
+    logger.debug(f"alterando um notável '{form.nome}'")
+    try:
+        session = Session()
+        stmt = update(Notavel).where(Notavel.id == form.id).values(nome=form.nome, apelido=form.apelido, atividade=form.atividade, descricao=form.descricao)
+        session.execute(stmt)
+        session.commit() 
+        return apresenta_notavel(form), 200
+    except Exception as e:
+        error_msg = "Não foi possível alterar o notável :/"
+        logger.warning(f"Erro ao alterar um notável '{form.nome}', {error_msg}, erro: {e}")
+        return {"message": error_msg}, 400
 
     
 

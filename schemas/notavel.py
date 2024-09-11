@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import Any, List
 from model.notavel import Notavel
 
 class NotavelAddSchema(BaseModel):
@@ -22,11 +22,13 @@ class NotavelUpdSchema(BaseModel):
 class RetornoNotavelSchema(BaseModel):
     """ Retorno de um novo notavel
     """
+    sucesso: bool
     id: int
     nome: str 
     apelido: str
     atividade: str
     descricao: str
+
 
 class ListagemNotaveisSchema(BaseModel):
     """ Define como uma listagem de Notaveis será apresentada
@@ -39,11 +41,27 @@ class NotaveisGetAllSchema(BaseModel):
     offset: str
     limit: str
 
+class NotaveisGetPorIdSchema(BaseModel):
+    """ faz busca por Id
+    """
+    id: int
 
-def apresenta_notavel(notavel: Notavel):
+class NotaveisGetPorNomeSchema(BaseModel):
+    """ faz busca por Id
+    """
+    nome: str
+
+class RetornoRemoveSchema(BaseModel):
+    """ Retorno de um novo notavel
+    """
+    sucesso: bool
+    mensagem: str
+
+def apresenta_notavel(sucesso: bool, notavel: Notavel):
     """ Retorna uma representação de um notável 
     """
     return {
+        "sucesso": sucesso,
         "id": notavel.id,
         "nome": notavel.nome,
         "apelido": notavel.apelido,
@@ -52,7 +70,7 @@ def apresenta_notavel(notavel: Notavel):
     }
 
 
-def apresenta_notaveis(notaveis: List[Notavel]):
+def apresenta_notaveis(sucesso: bool, notaveis: List[Notavel]):
     """ Retorna uma representação de uma lista de notaveis
     """
     result = []
@@ -65,5 +83,15 @@ def apresenta_notaveis(notaveis: List[Notavel]):
             "descricao": notavel.descricao
         })
 
-    return {"notaveis": result}
+    return { 
+        "sucesso": sucesso,
+        "data": result
+    }
 
+def apresenta_remove(sucesso: bool, msg: str):
+    """ Retorna uma representação de um notável 
+    """
+    return {
+        "sucesso": sucesso,
+        "mensagem": msg
+    }

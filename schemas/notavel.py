@@ -50,6 +50,8 @@ class NotaveisGetPorNomeSchema(BaseModel):
     """ faz busca por Id
     """
     nome: str
+    offset: str
+    limit: str
 
 class RetornoRemoveSchema(BaseModel):
     """ Retorno de um novo notavel

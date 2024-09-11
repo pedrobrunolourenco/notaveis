@@ -76,8 +76,11 @@ def get_por_id(query: NotaveisGetPorIdSchema):
 def get_por_nome(query: NotaveisGetPorNomeSchema):
     """Obtém um notavel por parte do nome"""
     try:
+        limit = query.limit
+        offset = query.offset
+        nome = query.nome
         session = Session()
-        notaveis = session.query(Notavel).filter(Notavel.nome.ilike(f"%{query.nome}%"))
+        notaveis = session.query(Notavel).filter(Notavel.nome.ilike(f"%{nome}%")).limit(limit).offset(offset).all()
         return apresenta_notaveis(True, notaveis), 200
     except Exception as e:
         error_msg = "Não foi possível obter o notável :/"

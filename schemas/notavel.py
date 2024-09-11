@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 from model.notavel import Notavel
 
@@ -13,12 +13,11 @@ class NotavelAddSchema(BaseModel):
 class NotavelUpdSchema(BaseModel):
     """ Define como um novo notavel
     """
-    id: int
-    nome: str 
-    apelido: str
-    atividade: str
-    descricao: str
-
+    id: int = Field(..., description="Id do Notavel")
+    nome: str = Field(..., description="Nome do Notável")
+    apelido: str = Field(..., description="Apelido do Notavel")
+    atividade: str= Field(..., description="Atividade do Notavel")
+    descricao: str = Field(..., description="Resumo")
 
 class RetornoNotavelSchema(BaseModel):
     """ Retorno de um novo notavel
@@ -34,6 +33,11 @@ class ListagemNotaveisSchema(BaseModel):
     """
     notaveis:List[RetornoNotavelSchema]
 
+class NotaveisGetAllSchema(BaseModel):
+    """ faz busca paginada
+    """
+    offset: str
+    limit: str
 
 
 def apresenta_notavel(notavel: Notavel):

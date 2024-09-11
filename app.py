@@ -9,7 +9,7 @@ from flask_cors import CORS
 from sqlalchemy import update
 from sqlalchemy.orm import aliased
 
-info = Info(title="API para criação de um notável - Sprint-03", version="1.0.0")
+info = Info(title="API - Notáveis - Sprint-03", version="1.0.0")
 app = OpenAPI(__name__, info=info)
 CORS(app)
 
@@ -124,6 +124,6 @@ def remove_po_id(query: NotaveisGetPorIdSchema):
             
     except Exception as e:
         error_msg =  f"Notável de código {query.id} => Erro na exclusão {e}"
-        logger.warning(f"Erro ao pesquiar o notável {error_msg}, erro: {e}")
+        logger.warning(f"Erro ao excluir o notável {error_msg}, erro: {e}")
         return {"sucesso": False, "message": error_msg}, 400
 

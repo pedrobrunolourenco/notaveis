@@ -1,11 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Any, List
+from typing import Any, List, Optional
 from model.notavel import Notavel
 
 class NotavelAddSchema(BaseModel):
     """ Define como um novo notavel
     """
-    nome: str 
+    nome: str
     apelido: str
     atividade: str
     descricao: str
@@ -13,11 +13,11 @@ class NotavelAddSchema(BaseModel):
 class NotavelUpdSchema(BaseModel):
     """ Define como um novo notavel
     """
-    id: int = Field(..., description="Id do Notavel")
-    nome: str = Field(..., description="Nome do Notável")
-    apelido: str = Field(..., description="Apelido do Notavel")
-    atividade: str= Field(..., description="Atividade do Notavel")
-    descricao: str = Field(..., description="Resumo")
+    id: int
+    nome: str
+    apelido: str
+    atividade: str
+    descricao: str
 
 class RetornoNotavelSchema(BaseModel):
     """ Retorno de um novo notavel
@@ -38,8 +38,9 @@ class ListagemNotaveisSchema(BaseModel):
 class NotaveisGetAllSchema(BaseModel):
     """ faz busca paginada
     """
-    offset: str
-    limit: str
+    offset: Optional[str] = None
+    limit: Optional[str] = None
+    busca: Optional[str] = None
 
 class NotaveisGetPorIdSchema(BaseModel):
     """ faz busca por Id
@@ -72,7 +73,7 @@ def apresenta_notavel(sucesso: bool, notavel: Notavel):
     }
 
 
-def apresenta_notaveis(sucesso: bool, notaveis: List[Notavel]):
+def apresenta_notaveis(sucesso: bool, notaveis: List[RetornoNotavelSchema], totalCount):
     """ Retorna uma representação de uma lista de notaveis
     """
     result = []
@@ -82,12 +83,13 @@ def apresenta_notaveis(sucesso: bool, notaveis: List[Notavel]):
             "nome": notavel.nome,
             "apelido": notavel.apelido,
             "atividade": notavel.atividade,
-            "descricao": notavel.descricao
+            "descricao": notavel.descricao,
         })
 
     return { 
         "sucesso": sucesso,
-        "data": result
+        "data": result,
+        "totalCount": totalCount
     }
 
 def apresenta_remove(sucesso: bool, msg: str):

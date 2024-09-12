@@ -22,13 +22,13 @@ def home():
 
 @app.post('/create', tags=[notavel_tag],
           responses={"200": RetornoNotavelSchema, "409": ErrorSchema, "400": ErrorSchema})
-def add_notavel(form: NotavelAddSchema):
+def add_notavel(body: NotavelAddSchema):
     """Adiciona um novo notavel à base de dados"""
     notavel = Notavel(
-        nome=form.nome,
-        apelido=form.apelido,
-        atividade=form.atividade,
-        descricao=form.descricao
+        nome=body.nome,
+        apelido=body.apelido,
+        atividade=body.atividade,
+        descricao=body.descricao
     )
     logger.debug(f"Adicionando um notável à base: '{notavel.nome}'")
     try:
@@ -40,17 +40,23 @@ def add_notavel(form: NotavelAddSchema):
         error_msg = "Não foi possível salvar o novo notável :/"
         logger.warning(f"Erro ao adicionar um notável '{notavel.nome}', {error_msg}, erro: {e}")
         return {"sucesso": False, "message": error_msg}, 400
-
 @app.get('/getall', tags=[notavel_tag],
           responses={"200": ListagemNotaveisSchema, "409": ErrorSchema, "400": ErrorSchema})
+
 def get_notaveis(query: NotaveisGetAllSchema):
     """Obtém uma lista de notaveis"""
     try:
         limit = query.limit
         offset = query.offset
+        busca = query.busca
         session = Session()
-        notaveis = session.query(Notavel).limit(limit).offset(offset).all()
-        return apresenta_notaveis(True, notaveis), 200
+        if busca is None or busca.strip() == "":
+           totalCount = session.query(Notavel).count()
+           notaveis = session.query(Notavel).limit(limit).offset(offset).all()
+        else:
+           totalCount = session.query(Notavel).filter(Notavel.nome.ilike(f"%{busca}%")).count()
+           notaveis = session.query(Notavel).filter(Notavel.nome.ilike(f"%{busca}%")).limit(limit).offset(offset).all()
+        return apresenta_notaveis(True, notaveis, totalCount), 200
     except Exception as e:
         error_msg = "Não foi possível obter listagem de notaveis :/"
         logger.warning(f"Erro ao listar notaveis {error_msg}, erro: {e}")
@@ -71,42 +77,24 @@ def get_por_id(query: NotaveisGetPorIdSchema):
         return {"sucesso": False, "message": error_msg}, 400
 
     
-@app.get('/getbynome', tags=[notavel_tag],
-          responses={"200": ListagemNotaveisSchema, "409": ErrorSchema, "400": ErrorSchema})
-def get_por_nome(query: NotaveisGetPorNomeSchema):
-    """Obtém um notavel por parte do nome"""
-    try:
-        limit = query.limit
-        offset = query.offset
-        nome = query.nome
-        session = Session()
-        notaveis = session.query(Notavel).filter(Notavel.nome.ilike(f"%{nome}%")).limit(limit).offset(offset).all()
-        return apresenta_notaveis(True, notaveis), 200
-    except Exception as e:
-        error_msg = "Não foi possível obter o notável :/"
-        logger.warning(f"Erro ao pesquiar o notável {error_msg}, erro: {e}")
-        return {"sucesso": False, "message": error_msg}, 400
-
-
 @app.put('/update', tags=[notavel_tag],
           responses={"200": RetornoNotavelSchema, "409": ErrorSchema, "400": ErrorSchema})
-def update_notavel(form: NotavelUpdSchema):
+def update_notavel(body: NotavelUpdSchema):
     """Altera o dados notavel à base de dados"""
-    logger.debug(f"alterando um notável '{form.nome}'")
+    logger.debug(f"alterando um notável '{body.nome}'")
     try:
         session = Session()
-        stmt = update(Notavel).where(Notavel.id == form.id).values(nome=form.nome, apelido=form.apelido, atividade=form.atividade, descricao=form.descricao)
+        stmt = update(Notavel).where(Notavel.id == body.id).values(nome=body.nome, apelido=body.apelido, atividade=body.atividade, descricao=body.descricao)
         result = session.execute(stmt)
-        # Verificar se alguma linha foi afetada pela query
         if result.rowcount > 0:
             session.commit()
-            return apresenta_notavel(True, form), 200
+            return apresenta_notavel(True, body), 200
         else:
             session.rollback()
-            return {"sucesso": False, "message": f"O notável com código {form.id} não foi localizado"}, 400
+            return {"sucesso": False, "message": f"O notável com código {body.id} não foi localizado"}, 400
     except Exception as e:
         error_msg = "Não foi possível alterar o notável :/"
-        logger.warning(f"Erro ao alterar um notável '{form.nome}', {error_msg}, erro: {e}")
+        logger.warning(f"Erro ao alterar um notável '{body.nome}', {error_msg}, erro: {e}")
         return {"sucesso": False, "message": error_msg}, 400
 
 @app.delete('/removebyid', tags=[notavel_tag],

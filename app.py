@@ -40,6 +40,7 @@ def add_notavel(body: NotavelAddSchema):
         error_msg = "Não foi possível salvar o novo notável :/"
         logger.warning(f"Erro ao adicionar um notável '{notavel.nome}', {error_msg}, erro: {e}")
         return {"sucesso": False, "message": error_msg}, 400
+    
 @app.get('/getall', tags=[notavel_tag],
           responses={"200": ListagemNotaveisSchema, "409": ErrorSchema, "400": ErrorSchema})
 

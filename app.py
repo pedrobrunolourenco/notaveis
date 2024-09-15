@@ -28,7 +28,8 @@ def add_notavel(body: NotavelAddSchema):
         nome=body.nome,
         apelido=body.apelido,
         atividade=body.atividade,
-        descricao=body.descricao
+        descricao=body.descricao,
+        imagem=body.imagem
     )
     logger.debug(f"Adicionando um notável à base: '{notavel.nome}'")
     try:
@@ -55,8 +56,8 @@ def get_notaveis(query: NotaveisGetAllSchema):
            totalCount = session.query(Notavel).count()
            notaveis = session.query(Notavel).limit(limit).offset(offset).all()
         else:
-           totalCount = session.query(Notavel).filter(Notavel.nome.ilike(f"%{busca}%")).count()
-           notaveis = session.query(Notavel).filter(Notavel.nome.ilike(f"%{busca}%")).limit(limit).offset(offset).all()
+           totalCount = session.query(Notavel).filter(Notavel.apelido.ilike(f"%{busca}%")).count()
+           notaveis = session.query(Notavel).filter(Notavel.apelido.ilike(f"%{busca}%")).limit(limit).offset(offset).all()
         return apresenta_notaveis(True, notaveis, totalCount), 200
     except Exception as e:
         error_msg = "Não foi possível obter listagem de notaveis :/"
@@ -85,7 +86,7 @@ def update_notavel(body: NotavelUpdSchema):
     logger.debug(f"alterando um notável '{body.nome}'")
     try:
         session = Session()
-        stmt = update(Notavel).where(Notavel.id == body.id).values(nome=body.nome, apelido=body.apelido, atividade=body.atividade, descricao=body.descricao)
+        stmt = update(Notavel).where(Notavel.id == body.id).values(nome=body.nome, apelido=body.apelido, atividade=body.atividade, descricao=body.descricao, imagem=body.imagem)
         result = session.execute(stmt)
         if result.rowcount > 0:
             session.commit()

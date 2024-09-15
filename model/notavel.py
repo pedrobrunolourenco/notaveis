@@ -12,12 +12,14 @@ class Notavel(Base):
     apelido = Column(String(30))
     atividade = Column(String(80))
     descricao = Column(String(150))
+    imagem =  Column(String(250))
 
-    def __init__(self, nome:str, apelido:str, atividade:str, descricao:str):
+    def __init__(self, nome:str, apelido:str, atividade:str, descricao:str, imagem:str):
         self.nome = nome
         self.apelido = apelido
         self.atividade = atividade
         self.descricao = descricao
+        self.imagem = imagem
 
 
 

@@ -9,6 +9,7 @@ class NotavelAddSchema(BaseModel):
     apelido: str
     atividade: str
     descricao: str
+    imagem: str
 
 class NotavelUpdSchema(BaseModel):
     """ Define como um novo notavel
@@ -18,6 +19,7 @@ class NotavelUpdSchema(BaseModel):
     apelido: str
     atividade: str
     descricao: str
+    imagem: str
 
 class RetornoNotavelSchema(BaseModel):
     """ Retorno de um novo notavel
@@ -28,6 +30,7 @@ class RetornoNotavelSchema(BaseModel):
     apelido: str
     atividade: str
     descricao: str
+    imagem: str
 
 
 class ListagemNotaveisSchema(BaseModel):
@@ -69,7 +72,8 @@ def apresenta_notavel(sucesso: bool, notavel: Notavel):
         "nome": notavel.nome,
         "apelido": notavel.apelido,
         "atividade": notavel.atividade,
-        "descricao": notavel.descricao
+        "descricao": notavel.descricao,
+        "imagem": notavel.imagem
     }
 
 
@@ -84,6 +88,7 @@ def apresenta_notaveis(sucesso: bool, notaveis: List[RetornoNotavelSchema], tota
             "apelido": notavel.apelido,
             "atividade": notavel.atividade,
             "descricao": notavel.descricao,
+            "imagem": notavel.imagem
         })
 
     return { 

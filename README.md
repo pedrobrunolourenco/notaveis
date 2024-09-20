@@ -13,7 +13,7 @@ Post, Put, Gets e Delete de Notáveis
 ### 4.3 - Executar os comandos abaixo
    ```sh
    docker build -t api-notaveis .
-   docker docker run -d -v notaveis_volume:/app/database -p 8181:8181 api-notaveis
+   docker run -d -v notaveis_volume:/app/database -p 8181:8181 api-notaveis
    ```
 - Feito isso a documentação do componente **Api-Notaveis** é disponibilizada em `localhost:8181`.
 
